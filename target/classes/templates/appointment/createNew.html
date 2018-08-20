@@ -1,0 +1,44 @@
+<main>
+<div class="container body-content span=8 offset=2">
+	<div class="well">
+		<form class="form-horizontal" th:action="@{/create}" method="post">
+			<fieldset>
+				<legend>Create Appointment</legend>
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="time">Time</label>
+					<div class="col-sm-4 ">
+							<input list="times" name="time">
+							<datalist id="times"></datalist>
+							<script type="text/javascript">
+								var mytimes = new Array();
+								mytimes[0] = '10:00';
+								mytimes[1] = '11:00';
+
+								var options = '';
+
+								for (var i = 0; i < mytimes.length; i++)
+									options += '<option value="'+mytimes[i]+'" />';
+
+								document.getElementById('times').innerHTML = options;
+							</script>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="date">Date</label>
+					<div class="col-sm-4 ">
+						<input class="form-control" type="date" id="date"
+							placeholder="Date" name="date" required="required" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-sm-4 col-sm-offset-4">
+						<a class="btn btn-default" th:href="@{/}">Cancel</a> <input
+							value="Submit" type="submit" class="btn btn-primary" />
+					</div>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>
+</main>

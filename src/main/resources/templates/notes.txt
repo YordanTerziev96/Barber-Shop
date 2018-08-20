@@ -1,0 +1,45 @@
+<script>
+
+	fetch('http://localhost:8080/appointment/freeAppointments?date=11-11-2018', {
+		method: "GET",
+		headers: {
+	    	Accept: "application/json",
+	   		"Content-Type": "application/json"
+	  	},
+	  	body: alert("a")
+	}).then(
+		    function(response) {
+		        if (response.status !== 200) {
+		        	console.log('Looks like there was a problem. Status Code: ' +
+		            response.status);
+		          	return;
+		        }
+
+		        // Examine the text in the response
+		        response.json().then(function(data) {
+		          console.log(data);
+		        });
+		      }
+		    )
+		    .catch(function(err) {
+		      console.log('Fetch Error :-S', err);
+		    });
+  </script>
+  
+  
+  
+  
+  <input list="times" name="time">
+							<datalist id="times"></datalist>
+							<script type="text/javascript">
+								var mytimes = new Array();
+								mytimes[0] = '10:00';
+								mytimes[1] = '11:00';
+
+								var options = '';
+
+								for (var i = 0; i < mytimes.length; i++)
+									options += '<option value="'+mytimes[i]+'" />';
+
+								document.getElementById('times').innerHTML = options;
+							</script>
