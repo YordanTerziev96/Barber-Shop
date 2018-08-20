@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,7 +32,7 @@ public class AppointmentController {
 	@Transactional
 	public String makeAnAppointment(String date, String hour) {
 		
-			return as.makeAnAppointment(date, hour);
+			return as.makeAnAppointment(SecurityContextHolder.getContext().getAuthentication().getName(), date, hour);
 	}
 	
 	@RequestMapping(value = "/show", method = RequestMethod.GET)

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,15 +28,15 @@ public class HelloController {
 		return "base-layout";
 	}
 	
-	@GetMapping("/create")
+	@GetMapping("/appointments/create")
 	public String create(Model model) {
 		model.addAttribute("view", "appointment/createNew");
 		return "base-layout";
 	}
 	
-	@PostMapping("/create")
+	@PostMapping("/appointments/create")
 	public @ResponseBody String createAppointmentProccesing(Appointment app) {
-		return as.makeAnAppointment(app.getDate().toString(), app.getHour().toString());
+		return as.makeAnAppointment(SecurityContextHolder.getContext().getAuthentication().getName(), app.getDate().toString(), app.getHour().toString());
 	}
 	
 	@GetMapping("/appointments/free")

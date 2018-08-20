@@ -13,6 +13,9 @@ public class User extends BaseEntity {
 
 	@Column(nullable = false, unique = true)
 	private String username;
+	
+	@Column(nullable = false)
+	private String password;
 
 	@Column(nullable = false)
 	private String firstName;
@@ -22,6 +25,9 @@ public class User extends BaseEntity {
 
 	@Column(nullable = false)
 	private String phone;
+	
+	@Column(nullable = false)
+	private int enabled;
 
 	@OneToMany(mappedBy = "user")
 	private List<Appointment> appointments = new ArrayList<>();
@@ -56,6 +62,22 @@ public class User extends BaseEntity {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public int getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(int enabled) {
+		this.enabled = enabled;
 	}
 
 }

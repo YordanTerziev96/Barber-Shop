@@ -25,6 +25,7 @@ public class UserController {
 	@RequestMapping(value = "/register", method = RequestMethod.POST, params = { "username", "password", "firstName",
 			"lastName", "phone" })
 	@Transactional
+	@ResponseBody
 	public String registerUser(String username, String password, String firstName, String lastName, String phone) {
 		us.register(username, password, firstName, lastName, phone);
 		return "Hello " + username + " !!!";
@@ -36,6 +37,13 @@ public class UserController {
 	public ResponseEntity<?> getAll() {
 
 		return new ResponseEntity<List<User>>(us.getAllUsers(), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/delete", method = RequestMethod.POST, params = {"date", "hour"})
+	@Transactional
+	@ResponseBody
+	public String deleteAppointment(String date, String hour) {
+		return us.deleteAppointment(date, hour);
 	}
 
 }

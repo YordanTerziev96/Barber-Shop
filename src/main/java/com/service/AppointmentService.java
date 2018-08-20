@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.model.Appointment;
@@ -23,30 +24,38 @@ public class AppointmentService {
 	@PersistenceContext
 	EntityManager emm;
 	
-	static List<LocalTime> hours = new ArrayList<LocalTime>();
+	
     static HashMap<LocalDate, List<LocalTime>> map = new HashMap<LocalDate, List<LocalTime>>();
 
 	@SuppressWarnings("unchecked")
-	public String makeAnAppointment(String date, String hour) {
+	public String makeAnAppointment(String username, String date, String hour) {
 		
-		User u = (User) emm.createQuery("Select u from User u WHERE u.id = 1").getSingleResult();
+		User u = (User) emm.createQuery("Select u from User u WHERE u.username =:username")
+				.setParameter("username", username).getSingleResult();
+		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate d = LocalDate.parse(date, formatter);
 		LocalTime t = LocalTime.parse(hour);
+		
 		if(validateDate(d)) {
 			List<Appointment> ap = new ArrayList<>();
 			ap =  emm.createQuery("Select a from Appointment a where a.date =:date and a.hour =:hour")
 					.setParameter("date", d).setParameter("hour", t).getResultList();
-			if(ap.size() == 0) {
-				Appointment a = new Appointment();
-				a.setUser(u);
-				a.setDate(d);
-				a.setHour(t);
-				emm.persist(a);
-				return "You`ve made an appointment for " + hour + " at " + date;
-			}
-			else {
-				return "This hour has been already taken! Choose another one!";
+			if(validateAppointment(u, d)) {
+				
+				if(ap.size() == 0) {
+					Appointment a = new Appointment();
+					a.setUser(u);
+					a.setDate(d);
+					a.setHour(t);
+					emm.persist(a);
+					return "You`ve made an appointment for " + hour + " at " + date;
+				}
+				else {
+					return "This hour has been already taken! Choose another one!";
+				}
+			}else {
+				return "You cannot make appoint in such a close range !";
 			}
 		}
 		else {
@@ -67,6 +76,33 @@ public class AppointmentService {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public boolean validateAppointment(User u, LocalDate date) {
+		List<Appointment> appointments = emm.createQuery("Select a from Appointment a where a.user =:user")
+				.setParameter("user", u).getResultList();
+		if(appointments.size() == 0) {
+			return true;
+		}
+		else {
+			for(Appointment a : appointments) {
+				
+				LocalDate dp = a.getDate().plusDays(3);
+				LocalDate dm = a.getDate().minusDays(3);
+				
+				if(a.getDate().compareTo(date) == 0) {
+					return false;
+				}
+				else if(!(a.getDate().isBefore(date) && dp.isBefore(date))) {
+					return false;
+				}
+				else if(!(a.getDate().isAfter(date) && dm.isAfter(date))) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
 	public List<Appointment> showAppointedHoursForDate(String date) {
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -79,7 +115,8 @@ public class AppointmentService {
 	
 	@SuppressWarnings("unchecked")
 	public List<LocalTime> showFreeHoursForDate(String date) {
-		generateHours();
+		List<LocalTime> hours = new ArrayList<LocalTime>();
+		generateHours(hours);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate d = LocalDate.parse(date, formatter);
 		
@@ -95,7 +132,8 @@ public class AppointmentService {
 	
 	@SuppressWarnings("unchecked")
 	public List<LocalTime> showFreeHoursForDatee(String date) {
-		generateHours();
+		List<LocalTime> hours = new ArrayList<LocalTime>();
+		generateHours(hours);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		LocalDate d = LocalDate.parse(date, formatter);
 		
@@ -109,11 +147,12 @@ public class AppointmentService {
 		return hours;
 	}
 	
-	public void generateHours() {
+	public void generateHours(List<LocalTime> hours) {
+		
 		 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_TIME;
-		 LocalTime time = LocalTime.parse("10:00:00", dateTimeFormatter);
+		 LocalTime time = LocalTime.parse("10:00", dateTimeFormatter);
 		 hours.add(time);
-		 LocalTime lastHour = LocalTime.parse("18:00:00", dateTimeFormatter);
+		 LocalTime lastHour = LocalTime.parse("18:00", dateTimeFormatter);
 		while(time.compareTo(lastHour) != 0) {
 			time = time.plusMinutes(30);
 			hours.add(time);
@@ -123,7 +162,8 @@ public class AppointmentService {
 	
 	public HashMap<LocalDate, List<LocalTime>> generateDates() {
 		LocalDate date = LocalDate.now();
-		generateHours();
+		List<LocalTime> hours = new ArrayList<LocalTime>();
+		generateHours(hours);
 		map.put(date, hours);
 		for(int i = 0; i < 6; i++) {
 			date = date.plusDays(1);
