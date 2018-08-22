@@ -47,7 +47,7 @@ public class AppointmentController {
 	@Transactional
 	public ResponseEntity<?> showAppointmentsAtDate(String date) {
 		
-		return new ResponseEntity<List<Appointment>>(as.showAppointedHoursForDate(date), HttpStatus.OK);
+		return new ResponseEntity<HashMap<String, LocalTime>>(as.showAppointedHoursForDate(date), HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/freeAppointments", method = RequestMethod.GET, params= {"date"})

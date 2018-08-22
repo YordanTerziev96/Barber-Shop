@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		 .anyRequest().authenticated()
 		 .and()
 		 .formLogin()
-		 .defaultSuccessUrl("/swagger-ui.html")	 
+		 .defaultSuccessUrl("/create")	 
 		 .permitAll()
 		 .and()
 		 .logout()

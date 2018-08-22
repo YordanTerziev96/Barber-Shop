@@ -11,7 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 
 import com.model.Appointment;
@@ -85,16 +85,16 @@ public class AppointmentService {
 		else {
 			for(Appointment a : appointments) {
 				
-				LocalDate dp = a.getDate().plusDays(3);
-				LocalDate dm = a.getDate().minusDays(3);
+				LocalDate dp = date.plusDays(3);
+				LocalDate dm = date.minusDays(3);
 				
 				if(a.getDate().compareTo(date) == 0) {
 					return false;
 				}
-				else if(!(a.getDate().isBefore(date) && dp.isBefore(date))) {
+				else if(a.getDate().isBefore(date) && a.getDate().isAfter(dm)) {
 					return false;
 				}
-				else if(!(a.getDate().isAfter(date) && dm.isAfter(date))) {
+				else if(a.getDate().isAfter(date) && a.getDate().isBefore(dp)) {
 					return false;
 				}
 			}
@@ -103,14 +103,20 @@ public class AppointmentService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Appointment> showAppointedHoursForDate(String date) {
+	public HashMap<String, LocalTime> showAppointedHoursForDate(String date) {
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate d = LocalDate.parse(date, formatter);
 
 		List<Appointment> apps = emm.createQuery("Select a from Appointment a where a.date =:date")
 				.setParameter("date", d).getResultList();
-		return apps;
+		HashMap<String, LocalTime> mapHours = new HashMap<>();
+		
+		for(Appointment a : apps) {
+			mapHours.put(a.getUser().getUsername(), a.getHour());
+		}
+		return mapHours;
+		
 	}
 	
 	@SuppressWarnings("unchecked")

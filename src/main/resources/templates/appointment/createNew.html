@@ -42,10 +42,9 @@
 		}
 		fetch('http://localhost:8080/appointment/freeAppointments?date='+newDate, {
 			method: "GET",
-			headers: {
-		    	Accept: "application/json",
-		   		"Content-Type": "application/json"
-		  	},
+			credentials: "include",
+			headers: new Headers({'Content-Type': 'application/json',
+	             'Authorization': 'Basic '+ 'dancho:0000'}),
 		  	body: console.log("Connecting to back-end")
 		}).then(
 			function(response) {
