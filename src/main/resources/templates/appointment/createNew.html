@@ -15,7 +15,7 @@
 					<div class="form-group">
 						<label class="col-sm-4 control-label" for="time">Time</label>
 						<div>
-							<select class="timeinpt" id="times"
+							<select class="timeinpt" id="times" name="hour" required="required"
 								onmousedown="if(this.options.length>0){this.size=5;}"
 								onchange="this.blur()" onblur="this.size=0"></select>
 						</div>
@@ -80,7 +80,7 @@
 	@media ( min-width : 1500px) and (max-width: 1875px) {
 		.timeinpt {
 			z-index: 999;
-			margin-left: 377px;
+			margin-left: 17px;
 		}
 	}
 </style>

@@ -28,8 +28,7 @@ public class UserController {
 	@Transactional
 	@ResponseBody
 	public String registerUser(String username, String password, String firstName, String lastName, String phone) {
-		us.register(username, password, firstName, lastName, phone);
-		return "Hello " + username + " !!!";
+		return us.register(username, password, firstName, lastName, phone);
 	}
 
 	@RequestMapping(value = "/all", method = RequestMethod.GET)

@@ -1,6 +1,7 @@
 package com.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -11,10 +12,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
-import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 
 import com.model.Appointment;
+import com.model.AppointmentDTO;
 import com.model.User;
 
 @Service
@@ -103,17 +104,19 @@ public class AppointmentService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public HashMap<String, LocalTime> showAppointedHoursForDate(String date) {
+	public HashMap<String, List<LocalTime>> showAppointedHoursForDate(String date) {
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate d = LocalDate.parse(date, formatter);
 
 		List<Appointment> apps = emm.createQuery("Select a from Appointment a where a.date =:date")
 				.setParameter("date", d).getResultList();
-		HashMap<String, LocalTime> mapHours = new HashMap<>();
-		
+		HashMap<String, List<LocalTime>> mapHours = new HashMap<>();
 		for(Appointment a : apps) {
-			mapHours.put(a.getUser().getUsername(), a.getHour());
+			mapHours.put(a.getUser().getUsername(), new ArrayList<LocalTime>());
+			mapHours.get(a.getUser().getUsername()).add(a.getHour());
+			mapHours.get(a.getUser().getUsername()).add(a.getHour().plusMinutes(30));
+			
 		}
 		return mapHours;
 		
@@ -176,6 +179,66 @@ public class AppointmentService {
 			map.put(date, hours);
 		}
 		return map;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<AppointmentDTO> AppointedHoursForThisWeek() {
+		
+		LocalDate d = LocalDate.now();
+		while(d.getDayOfWeek().toString()!="MONDAY") {
+			d = d.minusDays(1);
+		}
+		List<AppointmentDTO> hours = new ArrayList<AppointmentDTO>();
+		List<Appointment> apps = new ArrayList<Appointment>();
+		for(int i = 0; i < 6; i++) {
+			
+			apps = emm.createQuery("Select a from Appointment a where a.date =:date")
+						.setParameter("date", d).getResultList();
+			
+			for(Appointment a : apps) {
+				AppointmentDTO temp = new AppointmentDTO();
+				LocalDateTime datetime = LocalDateTime.of(d.getYear(), d.getMonth(), d.getDayOfMonth(), a.getHour().getHour(), a.getHour().getMinute(), a.getHour().getSecond());
+				
+				temp.setTitle(a.getUser().getUsername());
+				temp.setStart(datetime);
+				temp.setEnd(datetime.plusMinutes(30));
+				hours.add(temp);
+			}
+			d = d.plusDays(1);
+		}
+		
+		return hours;
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<AppointmentDTO> AppointedHoursForNextWeek() {
+		
+		LocalDate d = LocalDate.now();
+		while(d.getDayOfWeek().toString()!="MONDAY") {
+			d = d.plusDays(1);
+		}
+		List<AppointmentDTO> hours = new ArrayList<AppointmentDTO>();
+		List<Appointment> apps = new ArrayList<Appointment>();
+		for(int i = 0; i < 6; i++) {
+			
+			apps = emm.createQuery("Select a from Appointment a where a.date =:date")
+						.setParameter("date", d).getResultList();
+			
+			for(Appointment a : apps) {
+				AppointmentDTO temp = new AppointmentDTO();
+				LocalDateTime datetime = LocalDateTime.of(d.getYear(), d.getMonth(), d.getDayOfMonth(), a.getHour().getHour(), a.getHour().getMinute(), a.getHour().getSecond());
+				
+				temp.setTitle(a.getUser().getUsername());
+				temp.setStart(datetime);
+				temp.setEnd(datetime.plusMinutes(30));
+				hours.add(temp);
+			}
+			d = d.plusDays(1);
+		}
+		
+		return hours;
+		
 	}
 
 }

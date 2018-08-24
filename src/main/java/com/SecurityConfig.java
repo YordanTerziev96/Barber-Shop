@@ -1,14 +1,22 @@
 package com;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -20,7 +28,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	@Autowired
     private DataSource dataSource;
-
+	
+	private AuthenticationManager authManager;
+	
 	@Autowired
 	@Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -37,12 +47,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
 		 http.csrf().disable().sessionManagement().disable()
 		 .authorizeRequests()
-//		 .antMatchers("/account/findall").hasAuthority("ADMIN")
-		 .antMatchers("/user/delete").hasAuthority("ADMIN")
+		 .antMatchers("/register").permitAll()
+		 .antMatchers("/login").permitAll()
+		 .antMatchers("/create").hasAnyAuthority("USER", "ADMIN")
+		 .antMatchers("/css/**").permitAll()
+		 .antMatchers("/user/**").hasAuthority("ADMIN")
 		 .anyRequest().authenticated()
 		 .and()
-		 .formLogin()
-		 .defaultSuccessUrl("/create")	 
+		 .formLogin().loginPage("/login")
+		 .defaultSuccessUrl("/home")
 		 .permitAll()
 		 .and()
 		 .logout()
@@ -51,5 +64,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		 .permitAll();
 		
 		 }
+	
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+	    web.ignoring().antMatchers("/css/**", "/scripts/**");
+	}
+	
+	public boolean autoLogin( String username, String password, HttpServletRequest request) {
+	       
+	        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+	 
+	        Authentication authentication = authManager.authenticate(token);
+	 
+	        SecurityContextHolder.getContext().setAuthentication(authentication );
+	 
+	        //this step is important, otherwise the new login is not in session which is required by Spring Security
+	        request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+	        
+	        
+	        return true;
+	    }
 
 }

@@ -12,14 +12,14 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li sec:authorize="isAnonymous()">
-                        <a th:href="@{/register}">
-                            REGISTER
+                      <li sec:authorize="isAuthenticated()">
+                        <a th:href="@{/create}">
+                            MAKE AN APPOINTMENT
                         </a>
                     </li>
-                    <li sec:authorize="isAnonymous()">
-                        <a th:href="@{/login}">
-                            LOGIN
+                    <li sec:authorize="isAuthenticated()">
+                        <a th:href="@{/logout}">
+                            LOGOUT
                         </a>
                     </li>
                 </ul>

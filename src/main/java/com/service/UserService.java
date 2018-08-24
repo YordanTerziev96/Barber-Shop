@@ -26,21 +26,33 @@ public class UserService {
 	
 	BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-	public void register(String username, String password, String firstName, String lastName, String phone) {
+	@SuppressWarnings("unchecked")
+	public String register(String username, String password, String firstName, String lastName, String phone) {
 		
-			User u = new User();
-			u.setUsername(username);
-			u.setFirstName(firstName);
-			u.setLastName(lastName);
-			u.setPassword(encoder.encode(password));
-			u.setPhone(phone);
-			u.setEnabled(1);
-			em.persist(u);
+			List<User> users = em.createQuery("Select u from User u where u.username=:username")
+						.setParameter("username", username)
+						.getResultList();
+			if(users.size() == 0) {
+				User u = new User();
+				u.setUsername(username);
+				u.setFirstName(firstName);
+				u.setLastName(lastName);
+				u.setPassword(encoder.encode(password));
+				u.setPhone(phone);
+				u.setEnabled(1);
+				em.persist(u);
+				
+				Authority a = new Authority();
+				a.setUsername(username);
+				a.setAuthority("USER");
+				em.persist(a);
+				return "You`ve successfully registered";
+			}
+			else {
+				return "This username already exists !!!";
+			}
 			
-			Authority a = new Authority();
-			a.setUsername(username);
-			a.setAuthority("USER");
-			em.persist(a);
+			
 	}
 
 	@SuppressWarnings("unchecked")
