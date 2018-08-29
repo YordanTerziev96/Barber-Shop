@@ -42,9 +42,11 @@ public class AppointmentService {
 			List<Appointment> ap = new ArrayList<>();
 			ap =  emm.createQuery("Select a from Appointment a where a.date =:date and a.hour =:hour")
 					.setParameter("date", d).setParameter("hour", t).getResultList();
+						
+			
 			if(validateAppointment(u, d)) {
 				
-				if(ap.size() == 0) {
+				if(ap.isEmpty()) {
 					Appointment a = new Appointment();
 					a.setUser(u);
 					a.setDate(d);
@@ -56,23 +58,19 @@ public class AppointmentService {
 					return "This hour has been already taken! Choose another one!";
 				}
 			}else {
-				return "You cannot make appoint in such a close range !";
+				return "You cannot make an appointment in such a close range!";
 			}
 		}
 		else {
-			return "Invalid date !";
+			return "Invalid date!";
 		}
 	}
 	
 	public boolean validateDate(LocalDate date) {
-		if(date.isBefore(LocalDate.now())) {
+		if(date.isBefore(LocalDate.now()) || date.getDayOfWeek().getValue() == 7) {
 			return false;
 		}
-		else if(date.getDayOfWeek().getValue() == 7) {
-			return false;
-		}
-		
-			return true;
+		return true;
 		
 	}
 	
@@ -80,7 +78,7 @@ public class AppointmentService {
 	public boolean validateAppointment(User u, LocalDate date) {
 		List<Appointment> appointments = emm.createQuery("Select a from Appointment a where a.user =:user")
 				.setParameter("user", u).getResultList();
-		if(appointments.size() == 0) {
+		if(appointments.isEmpty()) {
 			return true;
 		}
 		else {
@@ -89,13 +87,7 @@ public class AppointmentService {
 				LocalDate dp = date.plusDays(3);
 				LocalDate dm = date.minusDays(3);
 				
-				if(a.getDate().compareTo(date) == 0) {
-					return false;
-				}
-				else if(a.getDate().isBefore(date) && a.getDate().isAfter(dm)) {
-					return false;
-				}
-				else if(a.getDate().isAfter(date) && a.getDate().isBefore(dp)) {
+				if(a.getDate().compareTo(date) == 0 || (a.getDate().isBefore(date) && a.getDate().isAfter(dm)) || (a.getDate().isAfter(date) && a.getDate().isBefore(dp))) {
 					return false;
 				}
 			}

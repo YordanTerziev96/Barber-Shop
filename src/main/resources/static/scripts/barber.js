@@ -83,7 +83,7 @@ $(document).ready(function() {
 		       
 		       
 		       
-	    	   if($(".message").text() === "Invalid date !" || $(".message").text() === "You cannot make appoint in such a close range !"){
+	    	   if($(".message").text() === "Invalid date!" || $(".message").text() === "You cannot make an appointment in such a close range!"){
 	    		   $(".message").css('color', 'red');
 	    	   }else{
 	    		   $(".message").css('color', 'green');
