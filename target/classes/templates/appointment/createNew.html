@@ -22,55 +22,25 @@
 					</div>
 					<div class="form-group">
 						<div class="col-sm-4 col-sm-offset-4">
-							<a class="btn btn-default" th:href="@{/}">Cancel</a> <input
+							<a class="btn btn-default" th:href="@{/home}">Cancel</a>
+							 <input
 								value="Submit" type="submit" class="btn btn-primary" />
 						</div>
 					</div>
+						<div th:text="|${str}|" style="padding-left: 450px;"></div>
 				</fieldset>
 			</form>
 		</div>
 	</div>
+
+	<div id='calendar'></div>
 </main>
-<script type="text/javascript">
-	function fetchHours(value){
-		var mydate = new Date(value);
-		var month = mydate.getMonth() + 1;
-		if(month<10){
-		var newDate = mydate.getDate() + "-0" + month + "-" + mydate.getFullYear();
-		}else{
-			var newDate = mydate.getDate() + "-" + month + "-" + mydate.getFullYear();
-		}
-		fetch('http://localhost:8080/appointment/freeAppointments?date='+newDate, {
-			method: "GET",
-			credentials: "include",
-			headers: new Headers({'Content-Type': 'application/json',
-	             'Authorization': 'Basic '+ 'dancho:0000'}),
-		  	body: console.log("Connecting to back-end")
-		}).then(
-			function(response) {
-		    	if (response.status !== 200) {
-		        	console.log('Looks like there was a problem. Status Code: ' +
-		            response.status);
-		          	return;
-			}
-
-		   	// Examine the text in the response
-		    response.json().then(function(data) {
-		    	var options = '';
-		        for (var i = 0; i < data.length; i++)
-					options += '<option value="'+data[i]+'">'+data[i]+'</option>';
-		        	document.getElementById('times').innerHTML = options;
-		        });
-		   	}
-		)
-		.catch(function(err) {
-			console.log('Fetch Error :-S', err);
-		});
-	}
-</script>
-
 <style>
-	@media ( min-width : 768px) {
+	
+	.timeinpt{
+		margin-left: 17px;
+	}
+	/* @media ( min-width : 768px) {
 		.timeinpt {
 			z-index: 999;
 			margin-left: 33%;
@@ -83,4 +53,12 @@
 			margin-left: 17px;
 		}
 	}
+ */
+	#calendar {
+	backgroud:white;
+    	max-width: 900px;
+    	margin: 0 auto;
+  	}
+  	
+  	
 </style>

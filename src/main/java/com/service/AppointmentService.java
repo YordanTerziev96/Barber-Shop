@@ -71,9 +71,9 @@ public class AppointmentService {
 		else if(date.getDayOfWeek().getValue() == 7) {
 			return false;
 		}
-		else {
+		
 			return true;
-		}
+		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -101,25 +101,6 @@ public class AppointmentService {
 			}
 			return true;
 		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, List<LocalTime>> showAppointedHoursForDate(String date) {
-		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDate d = LocalDate.parse(date, formatter);
-
-		List<Appointment> apps = emm.createQuery("Select a from Appointment a where a.date =:date")
-				.setParameter("date", d).getResultList();
-		HashMap<String, List<LocalTime>> mapHours = new HashMap<>();
-		for(Appointment a : apps) {
-			mapHours.put(a.getUser().getUsername(), new ArrayList<LocalTime>());
-			mapHours.get(a.getUser().getUsername()).add(a.getHour());
-			mapHours.get(a.getUser().getUsername()).add(a.getHour().plusMinutes(30));
-			
-		}
-		return mapHours;
-		
 	}
 	
 	@SuppressWarnings("unchecked")

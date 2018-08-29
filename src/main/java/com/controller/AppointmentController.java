@@ -42,13 +42,6 @@ public class AppointmentController {
 		return new ResponseEntity<HashMap<LocalDate, List<LocalTime>>>(mapche, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/appointmentsAtDate", method = RequestMethod.GET, params= {"date"})
-	@Transactional
-	public ResponseEntity<?> showAppointmentsAtDate(String date) {
-		
-		return new ResponseEntity<HashMap<String, List<LocalTime>>>(as.showAppointedHoursForDate(date), HttpStatus.OK);
-	}
-	
 	@RequestMapping(value = "/freeAppointments", method = RequestMethod.GET, params= {"date"})
 	@Transactional
 	public @ResponseBody ResponseEntity<?> showFreeHoursAtDate(String date) {

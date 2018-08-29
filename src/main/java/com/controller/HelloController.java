@@ -71,12 +71,17 @@ public class HelloController {
 	public String create(Model model) {
 		model.addAttribute("view", "appointment/createNew");
 		model.addAttribute("header", "fragments/lognatHeader");
+		model.addAttribute("str", "");
 		return "base-layout";
 	}
 	
 	@PostMapping("/create")
-	public @ResponseBody String createAppointmentProccesing(Appointment app) {
-		return as.makeAnAppointment(SecurityContextHolder.getContext().getAuthentication().getName(), app.getDate().toString(), app.getHour().toString());
+	public String createAppointmentProccesing(Appointment app, Model model) {
+		String str = as.makeAnAppointment(SecurityContextHolder.getContext().getAuthentication().getName(), app.getDate().toString(), app.getHour().toString());
+		model.addAttribute("view", "appointment/createNew");
+		model.addAttribute("header", "fragments/lognatHeader");
+		model.addAttribute("str", str);
+		return "base-layout";
 	}
 	
 	@GetMapping("/appointments/free")

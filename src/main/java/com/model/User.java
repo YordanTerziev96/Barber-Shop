@@ -29,9 +29,6 @@ public class User extends BaseEntity {
 	@Column(nullable = false)
 	private int enabled;
 
-	@OneToMany(mappedBy = "user")
-	private List<Appointment> appointments = new ArrayList<>();
-
 	public String getUsername() {
 		return username;
 	}
